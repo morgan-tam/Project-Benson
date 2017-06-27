@@ -1,13 +1,15 @@
 
 # Project Benson
-## Group 1Problem Statement
+## Group 1: Problem Statement
+Collin , Morgan, Aleksandra, Chris
+
 
 ### OBJECTIVE
 Women Tech Women Yes (WTWY) is hosting a fundraising Gala on Sep 26, 2017. 
 They would like us help them identify optimal times and locations to deploy their subway canvassing team in order to maximize ticket purchases for the gala.
 
-### ASSUMPTIONS and DISCLAIMERS
 
+### ASSUMPTIONS and DISCLAIMERS
 **WTWY**
 - Gala is on Sep 26, 2017
 - WTWY has a team of 50 volunteers, who each work twice a week, at a max of 4 hours per day
@@ -23,6 +25,7 @@ They would like us help them identify optimal times and locations to deploy thei
 - matches from 
 - we will omit significant sources of error from our analays, but minor sources of error will persist
 
+
 ### MODELING CONSIDERATIONS
 We'll consider the following metrics in our final model:
 
@@ -37,6 +40,7 @@ We'll consider the following metrics in our final model:
 - Effect of weather on subway ridership
 - Prevalence of Toursts (anecdotal)
 - Proximity to tech hubs (anecdotal)
+
 
 ### DATASETS
 - MTA weekly turnstile data
