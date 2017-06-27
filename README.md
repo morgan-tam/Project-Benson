@@ -19,8 +19,8 @@ They would like us help them identify optimal times and locations to deploy thei
 - Geographical distribition of women is consistent enought to be negligble in our model
 
 **DATA**
-- public datasets (esp MTA data) will contain an inherent amount of incorrectable error
-- matches from 
+- MTA dataset contains an inherent amount of intractable error
+- cross-referenced datasets will introduce additional error (because values are not aligned with subway stations)
 - we will omit significant sources of error from our analays, but minor sources of error will persist
 
 
