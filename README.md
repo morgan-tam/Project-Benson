@@ -1,8 +1,7 @@
 
 # Project Benson
-## Group 1: Problem Statement
-Collin , Morgan, Aleksandra, Chris
-
+### Problem Statement
+Group 1: Collin, Morgan, Aleksandra, Chris
 
 ### OBJECTIVE
 Women Tech Women Yes (WTWY) is hosting a fundraising Gala on Sep 26, 2017. 
@@ -10,7 +9,7 @@ They would like us help them identify optimal times and locations to deploy thei
 
 
 ### ASSUMPTIONS and DISCLAIMERS
-**WTWY**
+**WOMEN TECH WOMEN YES**
 - Gala is on Sep 26, 2017
 - WTWY has a team of 50 volunteers, who each work twice a week, at a max of 4 hours per day
 
