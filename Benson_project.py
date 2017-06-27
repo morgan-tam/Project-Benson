@@ -42,12 +42,38 @@ def transit_per_station(all_data):
     for turnstile in list_of_turnstiles:
         turndf = db.loc[turnstile]
         entries = turndf.ENTRIES
-        exits = turndf['EXITS']
+        exits = turndf.EXITS
         saldo_entries = entries.max() - entries.min()
         saldo_exits = exits.max() - exits.min()
         transit = saldo_entries + saldo_exits
         station_transit[turnstile[3]] += transit
     return station_transit
+
+# actually, this gets correct results. So based on this, correct the code:
+
+from collections import defaultdict
+import csv
+from datetime import datetime
+
+DATE_FORMAT = '%m/%d/%Y'
+with open('turnstile_160702.txt') as f:
+    reader = csv.reader(f)
+    data = list(reader)
+    date_and_entries = defaultdict(list)
+    for i in range(1, len(data)):
+        row = data[i]
+        dts = str(row[6])
+        date = datetime.strptime(dts, DATE_FORMAT)
+        t = (row[0], row[1], row[2], row[3], date)
+        date_and_entries[t].append(int(row[9]))
+        i = 0
+    entries_per_day = {}
+    for k, v in date_and_entries.items():
+        key = k[:-1]
+        maxim = sorted(v)[-1]
+        minim = sorted(v)[0]
+        value = [k[-1], maxim - minim]
+        entries_per_day[key] = value
 
 data = read_data('/Users/aleksandra/ds/metis/metisgh/metis_projects/mta_project/data_mta/')
 transit = transit_per_station(data)
