@@ -1,7 +1,6 @@
 
-# Project Benson
-### Problem Statement
-Group 1: Collin, Morgan, Aleksandra, Chris
+# Project Benson: Problem Statement
+## Collin, Morgan, Aleksandra, Chris
 
 ### OBJECTIVE
 Women Tech Women Yes (WTWY) is hosting a fundraising Gala on Sep 26, 2017. 
@@ -47,4 +46,4 @@ We'll consider the following metrics in our final model:
 - Census Data: past donations relative to income per census tract
 - NOAA NYC Climate Data
 
-- anedotal information regarding tourist hotspots botltlenecks
+- anecdotal information regarding tourist hotspots botltlenecks
