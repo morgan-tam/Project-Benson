@@ -1,15 +1,13 @@
 
 # coding: utf-8
 
-# API key = AIzaSyBaExoC_xY6qKJ4TF3MkW78Hhidr32ZSzg
-
 # In[1]:
 
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+from collections import OrderedDict
 get_ipython().magic(u'matplotlib inline')
-import os
 
 
 # # Finding Lat and Long of Top Stations 
@@ -21,25 +19,6 @@ station_df.head(3)
 
 
 # In[3]:
-
-"""change = station_df[(station_df['Line'] == '6 Avenue') &                     (station_df['Station_Name'] ==                      '34th St')].Station_Name.replace('34th St','34 St Herald Sq')
-
-for index,name in change.iteritems():
-    station_df.loc[index,'Station_Name'] = name"""
-
-
-# In[4]:
-
-"""#Figuring out regular expressions in station names
-station_name = ['Grand Central','Union Sq','Times Sq', '34 St Herald Sq'] #Grand central, Atlantic Avenue, Columbus Circle
-latitude = []
-longitude = []
-for name in station_name:
-    latitude.append(station_df[station_df.Station_Name.str.contains('^'+name)].Station_Latitude.mean())
-    longitude.append(station_df[station_df.Station_Name.str.contains('^'+name)].Station_Longitude.mean())"""
-
-
-# In[5]:
 
 top20_to_lat_long = {
  'GRDCNTRL42ST4567S': ('Grand Central-42nd St', 40.751776, -73.976848),
@@ -65,11 +44,30 @@ top20_to_lat_long = {
 }
 
 
+# In[4]:
+
+top20_description = []
+for station in top20_to_lat_long.items():
+    name = station[1][0]
+    lat = station[1][1]
+    lon = station[1][2]
+    top20_description.append({'station': name, 'location': (lat,lon)})
+
+
+# In[5]:
+
+data_daily = pd.read_csv('Data/data_daily.csv')
+date = '06/20/2016'
+for i,station in enumerate(top20_to_lat_long.keys()):
+    count = data_daily[(data_daily.DATE==date) & (data_daily.UN_STATION==station)].groupby(['UN_STATION', 'DATE'])['SCP'].value_counts().count()
+    top20_description[i]['turnstiles'] = count
+
+
 # In[6]:
 
 top20_df = pd.DataFrame(top20_to_lat_long).T
-latitude = list(top20_df.loc[:,1])
-longitude = list(top20_df.loc[:,2])
+station_latitude = list(top20_df.loc[:,1])
+station_longitude = list(top20_df.loc[:,2])
 
 
 # # Finding Lat and Long of Top Earners
@@ -84,7 +82,7 @@ income_df.head(3)
 
 #Median Household Income more than 100k
 rich_families = income_df[(income_df['MHI']>100000) &                          ((income_df['COUNTY'] == 'New York County')                           | (income_df['COUNTY'] == 'Kings County')                           | (income_df['COUNTY'] == 'Bronx County')                           | (income_df['COUNTY'] == 'Queens County'))]
-rich_families.LOCALNAME.value_counts().head(10)
+rich_families.LOCALNAME.value_counts().head(5)
 
 
 # In[9]:
@@ -99,7 +97,7 @@ rich_longitude = rich_families.INTPTLON10
 
 irs_df = pd.read_excel('Data/IRS_SOI_NY_2014.csv')
 irs_df = irs_df.ix[10:]
-irs_df.head(7)
+irs_df.head(4)
 
 
 # In[11]:
@@ -150,8 +148,8 @@ zip_to_lat_long = pd.read_csv('Data/Zip_to_Lat_Lon.txt')
 generous_lat = []
 generous_long = []
 for zip_code in generous_zip_codes:
-    generous_lat.append(zip_to_lat_long[zip_to_lat_long.ZIP == zip_code].LAT)
-    generous_long.append(zip_to_lat_long[zip_to_lat_long.ZIP == zip_code].LNG)
+    generous_lat.append(float(zip_to_lat_long[zip_to_lat_long.ZIP == zip_code].LAT))
+    generous_long.append(float(zip_to_lat_long[zip_to_lat_long.ZIP == zip_code].LNG))
 
 
 # # Geo-Plotting 
@@ -163,7 +161,7 @@ from bokeh.models import ( GMapPlot, GMapOptions, ColumnDataSource,             
 )
 
 
-# In[25]:
+# In[21]:
 
 def geoplotting(latitude,longitude,title):
     output_notebook()
@@ -194,19 +192,58 @@ def geoplotting(latitude,longitude,title):
 
 
 
+# In[22]:
+
+geoplotting(station_latitude,station_longitude,"Top Stations")
+
+
+# In[23]:
+
+#geoplotting(rich_latitude,rich_longitude,"Affluent Areas")
+
+
+# In[24]:
+
+#geoplotting(generous_lat,generous_long, "The Generous (OR Tax hacking)")
+
+
+# # Heatmaps 
+
+# In[25]:
+
+import gmaps
+gmaps.configure(api_key="AIzaSyBaExoC_xY6qKJ4TF3MkW78Hhidr32ZSzg")
+top20_locations = zip(station_latitude,station_longitude)
+rich_locations = zip(rich_latitude,rich_longitude)
+generous_locations = zip(generous_lat,generous_long)
+
+
 # In[26]:
 
-geoplotting(latitude,longitude,"Top Stations")
+fig = gmaps.figure()
+top20_locations = [station["location"] for station in top20_description]
+info_box_template = """
+<dl>
+<dt>Station</dt><dd>{station}</dd>
+<dt># of Turnstiles</dt><dd>{turnstiles}</dd>
+</dl>
+"""
+station_info = [info_box_template.format(**station) for station in top20_description]
+marker_layer = gmaps.marker_layer(top20_locations, info_box_content=station_info)
+fig = gmaps.figure()
+fig.add_layer(marker_layer);fig
 
 
 # In[27]:
 
-geoplotting(rich_latitude,rich_longitude,"Affluent Areas")
+fig = gmaps.figure()
+fig.add_layer(gmaps.heatmap_layer(rich_locations,point_radius = 15));fig
 
 
 # In[28]:
 
-geoplotting(generous_lat,generous_long, "The Generous (OR Tax hacking)")
+fig = gmaps.figure()
+fig.add_layer(gmaps.heatmap_layer(generous_locations,point_radius = 40,max_intensity=1));fig
 
 
 # In[ ]:
