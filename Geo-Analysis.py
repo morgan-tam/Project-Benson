@@ -54,13 +54,15 @@ for station in top20_to_lat_long.items():
     top20_description.append({'station': name, 'location': (lat,lon)})
 
 
-# In[5]:
+# In[27]:
 
 data_daily = pd.read_csv('Data/data_daily.csv')
-date = '06/20/2016'
+date = '06/30/2016'
 for i,station in enumerate(top20_to_lat_long.keys()):
     count = data_daily[(data_daily.DATE==date) & (data_daily.UN_STATION==station)].groupby(['UN_STATION', 'DATE'])['SCP'].value_counts().count()
+    transits = int(data_daily[(data_daily.DATE==date) & (data_daily.UN_STATION==station)].groupby(['UN_STATION', 'DATE'])['TRANSITING'].sum())
     top20_description[i]['turnstiles'] = count
+    top20_description[i]['transits'] = transits
 
 
 # In[6]:
@@ -197,19 +199,9 @@ def geoplotting(latitude,longitude,title):
 geoplotting(station_latitude,station_longitude,"Top Stations")
 
 
-# In[23]:
-
-#geoplotting(rich_latitude,rich_longitude,"Affluent Areas")
-
-
-# In[24]:
-
-#geoplotting(generous_lat,generous_long, "The Generous (OR Tax hacking)")
-
-
 # # Heatmaps 
 
-# In[25]:
+# In[23]:
 
 import gmaps
 gmaps.configure(api_key="AIzaSyBaExoC_xY6qKJ4TF3MkW78Hhidr32ZSzg")
@@ -218,7 +210,7 @@ rich_locations = zip(rich_latitude,rich_longitude)
 generous_locations = zip(generous_lat,generous_long)
 
 
-# In[26]:
+# In[28]:
 
 fig = gmaps.figure()
 top20_locations = [station["location"] for station in top20_description]
@@ -226,6 +218,7 @@ info_box_template = """
 <dl>
 <dt>Station</dt><dd>{station}</dd>
 <dt># of Turnstiles</dt><dd>{turnstiles}</dd>
+<dt>Transits (6/30/2016)</dt><dd>{transits}</dd>
 </dl>
 """
 station_info = [info_box_template.format(**station) for station in top20_description]
@@ -234,13 +227,13 @@ fig = gmaps.figure()
 fig.add_layer(marker_layer);fig
 
 
-# In[27]:
+# In[25]:
 
 fig = gmaps.figure()
 fig.add_layer(gmaps.heatmap_layer(rich_locations,point_radius = 15));fig
 
 
-# In[28]:
+# In[26]:
 
 fig = gmaps.figure()
 fig.add_layer(gmaps.heatmap_layer(generous_locations,point_radius = 40,max_intensity=1));fig
